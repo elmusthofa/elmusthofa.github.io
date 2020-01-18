@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Football Apps</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="Football Apps">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="theme-color" content="#00A8A8">
+    <link rel="stylesheet" href="./css/materialize.min.css">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="apple-touch-icon" href="./images/icon.png">
+
+</head>
+<body>
+    <!-- Navigasi -->
+    <nav class="Strong cyan" role="navigation">
+        <div class="nav-wrapper container">
+            <a href="./index.html" class="brand-logo" id="logo-container">Football Apps</a>
+            <a href="./index.html" class="sidenav-trigger" data-target="nav-mobile">
+                <i class="material-icons">arrow_back</i>
+            </a>
+
+            <ul class="topnav right hide-on-med-and-down"></ul>
+            <ul class="sidenav" id="nav-mobile"></ul>
+        </div>
+    </nav>
+    <!-- Akhir Navigasi -->
+
+    <div class="container" id="body-content"></div>
+
+    <div class="fixed-action-btn">
+        <a class="btn-floating btn-large red" id="save">
+            <i class="large material-icons">save</i>
+        </a>
+    </div>
+
+    <div class="fixed-action-btn">
+        <a class="btn-floating btn-large red" id="delete">
+            <i class="large material-icons">delete</i>
+        </a>
+    </div>
+
+    <script type="text/javascript" src="https://unpkg.com/snarkdown@1.0.2/dist/snarkdown.umd.js"></script>
+    <script src="js/materialize.min.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/idb.js"></script>
+    <script src="js/db.js"></script>
+    
+
+    <!-- Service Worker -->
+    <script>
+        // Periksa service worker
+        if(!('serviceWorker' in navigator)) {
+            console.log("Service worker tidak didukung browser ini.");
+        } else {
+            registerServiceWorker();
+        }
+
+        // Register service worker
+        function registerServiceWorker() {
+            return navigator.serviceWorker.register('service-worker.js')
+                .then(function(registration) {
+                    console.log('Registrasi service worker berhasil.');
+                    return registration;
+                })
+                .catch(function(err) {
+                    console.log('Registrasi service worker gagal.', err);
+                });
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            var urlParams = new URLSearchParams(window.location.search);
+            var isFromSaved = urlParams.get("saved");
+
+
+            var btnDelete = document.getElementById("delete");
+            var save = document.getElementById("save");
+
+            var item = getDetailTeamById();
+ 
+            if (isFromSaved) {
+            save.style.display = 'none';
+            } else {
+                btnDelete.style.display = 'none';
+            }
+            
+            save.onclick = function() {
+                save.style.display = 'none';
+                btnDelete.style.display = 'block';
+                item.then(function(team) {
+                    saveTeam(team);
+                });
+            };
+
+            btnDelete.onclick = function() {
+                btnDelete.style.display = 'none';
+                save.style.display = 'block';
+                console.log("Tombol Delete diclick.");
+                item.then(function(teamId) {
+                    deleteTeam(teamId);
+                });
+            };
+        });
+    </script>
+</body>
+</html>
